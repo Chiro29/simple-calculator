@@ -7,12 +7,17 @@ const clear = document.querySelector(".clear");
 const percent = document.querySelector(".percent");
 
 const box = document.createElement("div");
+const boxResult = document.createElement("div");
 const numberSelected = document.createElement("p");
 const nextNumberSelected = document.createElement("p");
 const operatorSelected = document.createElement("p");
 const resultNumber = document.createElement("p");
 
+box.classList.add("box-flex");
+boxResult.classList.add("box-flex");
+
 container.appendChild(box);
+container.appendChild(boxResult);
 
 function operate(n, nx, o) {
   n = Number(n);
@@ -53,7 +58,7 @@ function sign(o) {
     resultNumber.textContent = "";
 
     box.removeChild(nextNumberSelected);
-    box.removeChild(resultNumber); 
+    boxResult.removeChild(resultNumber); 
   }
 
   operatorSelected.textContent = o.id;
@@ -62,7 +67,7 @@ function sign(o) {
 
 function equals() {
   resultNumber.textContent = operate(numberSelected.textContent, nextNumberSelected.textContent, operatorSelected.textContent);
-  box.appendChild(resultNumber);
+  boxResult.appendChild(resultNumber);
   addNumber = null;
 }
 
@@ -79,6 +84,7 @@ numbers.forEach(number => {
     number.addEventListener("click", () => {
       if (operatorSelected.textContent === "") {
         numberSelected.textContent = addNumbers(number.id);
+        
         box.appendChild(numberSelected);
       }
       else {
@@ -141,6 +147,6 @@ clear.addEventListener("click", () => {
   }
   if (resultNumber.textContent != "") {
     resultNumber.textContent = "";
-    box.removeChild(resultNumber);     
+    boxResult.removeChild(resultNumber);     
   }
 });

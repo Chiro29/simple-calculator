@@ -4,22 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simple calculator</title>
-  <script src="script.js" defer></script>
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <div>
-    <div class="container">
-
-    </div>
-    <div>
-      <div>
+  <main>
+    <div class="container"></div>
+    <div class="container-keys">
+      <div class="container-number">
         <ul>
           <li><button class="clear">CLEAR</button></li>
           <li><button class="percent" id="%">%</button></li>
         </ul>
-      </div>
-      <div class="container-number">
         <ul>
           <li><button class="numbers" id="7">7</button></li>
           <li><button class="numbers" id="8">8</button></li>
@@ -41,16 +37,14 @@
           <li><button class="numbers" id=".">.</button></li>
         </ul>
       </div>
-      <div>
-        <ul>
-          <li><button class="operations" id="+">+</button></li>
-          <li><button class="operations" id="-">-</button></li>
-          <li><button class="operations" id="×">×</button></li>
-          <li><button class="operations" id="÷">÷</button></li>
-          <li><button class="result" id="=">=</button></li>
-        </ul>
-      </div>
+      <ul class="container-operations">
+        <li><button class="operations" id="+">+</button></li>
+        <li><button class="operations" id="-">-</button></li>
+        <li><button class="operations" id="×">×</button></li>
+        <li><button class="operations" id="÷">÷</button></li>
+        <li><button class="result" id="=">=</button></li>
+      </ul>
     </div>
-  </div>
+  </main>
 </body>
 </html>
