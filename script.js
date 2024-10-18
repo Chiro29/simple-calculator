@@ -4,7 +4,6 @@ const operators = document.querySelectorAll(".operations");
 const result = document.querySelector(".result");
 const negative = document.querySelector(".negative");
 const clear = document.querySelector(".clear");
-const percent = document.querySelector(".percent");
 
 const box = document.createElement("div");
 const boxResult = document.createElement("div");
@@ -12,6 +11,9 @@ const numberSelected = document.createElement("p");
 const nextNumberSelected = document.createElement("p");
 const operatorSelected = document.createElement("p");
 const resultNumber = document.createElement("p");
+
+numberSelected.textContent = 0;
+box.appendChild(numberSelected);
 
 box.classList.add("box-flex");
 boxResult.classList.add("box-flex");
@@ -54,19 +56,31 @@ function divide(n, nx) {
 function sign(o) {
   if (resultNumber.textContent != "") {
     numberSelected.textContent = resultNumber.textContent;
-    nextNumberSelected.textContent = "";
     resultNumber.textContent = "";
-
-    box.removeChild(nextNumberSelected);
+    
+    if (nextNumberSelected.textContent != "") {
+      nextNumberSelected.textContent = "";
+      box.removeChild(nextNumberSelected);
+    }
+    
     boxResult.removeChild(resultNumber); 
   }
 
   operatorSelected.textContent = o.id;
+  
+  if(operatorSelected.textContent === "%")
+    equals();
+
   box.appendChild(operatorSelected);
 }
 
+function round(e) {
+  return Math.round(e * 100) / 100;
+}
+
 function equals() {
-  resultNumber.textContent = operate(numberSelected.textContent, nextNumberSelected.textContent, operatorSelected.textContent);
+  const notRound = operate(numberSelected.textContent, nextNumberSelected.textContent, operatorSelected.textContent);
+  resultNumber.textContent = round(notRound);
   boxResult.appendChild(resultNumber);
   addNumber = null;
 }
@@ -84,7 +98,6 @@ numbers.forEach(number => {
     number.addEventListener("click", () => {
       if (operatorSelected.textContent === "") {
         numberSelected.textContent = addNumbers(number.id);
-        
         box.appendChild(numberSelected);
       }
       else {
@@ -95,20 +108,24 @@ numbers.forEach(number => {
 });
 
 negative.addEventListener("click", () => {
-  if(operatorSelected.textContent === "") {
+  if(nextNumberSelected.textContent === "") 
     numberSelected.textContent = -numberSelected.textContent;
+  else if(resultNumber.textContent != "") {
+    numberSelected.textContent = -resultNumber.textContent;
+    resultNumber.textContent = "";
+    nextNumberSelected.textContent = "";
+
+    boxResult.removeChild(resultNumber);
+    box.removeChild(nextNumberSelected);
   }
-  else {
+  else
     nextNumberSelected.textContent = -nextNumberSelected.textContent;
-  }
 });
 
 operators.forEach(operator => {
   operator.addEventListener("click", () => {
-    if(resultNumber.textContent != "")
+    if ((resultNumber.textContent === "" && nextNumberSelected.textContent === "") || (resultNumber.textContent != "" && nextNumberSelected.textContent != "")) {
       operatorSelected.textContent = "";
-
-    if (operatorSelected.textContent === "") {
       sign(operator);
       addNumber = null;
     }
@@ -123,20 +140,10 @@ result.addEventListener("click", () => {
   equals();
 });
 
-percent.addEventListener("click", () => {
-  numberSelected.textContent = operate(numberSelected.textContent, "", "%");
-  box.appendChild(numberSelected);
-  addNumber = null;
-  operatorSelected.textContent = "";
-});
-
 clear.addEventListener("click", () => {
   addNumber = null;
+  numberSelected.textContent = 0;
 
-  if (numberSelected.textContent != "") {
-    numberSelected.textContent = "";
-    box.removeChild(numberSelected);      
-  }
   if (nextNumberSelected.textContent != "") {
     nextNumberSelected.textContent = "";
     box.removeChild(nextNumberSelected);    
