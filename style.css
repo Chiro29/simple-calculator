@@ -61,11 +61,11 @@ button:hover {
   flex-direction: column;
 }
 
-.numbers, .operations, .percent, .negative, .result, .clear {
+.numbers, .operations, .point, .negative, .result, .clear {
   font-size: 32px;
 }
 
-.numbers, .operations, .percent, .negative, .result {
+.numbers, .operations, .point, .negative, .result {
   padding: 10px;
   width: 100px;
   height: 100px;

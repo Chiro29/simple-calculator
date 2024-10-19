@@ -2,6 +2,7 @@ const container = document.querySelector(".container");
 const numbers = document.querySelectorAll(".numbers");
 const operators = document.querySelectorAll(".operations");
 const result = document.querySelector(".result");
+const point = document.querySelector(".point");
 const negative = document.querySelector(".negative");
 const clear = document.querySelector(".clear");
 
@@ -94,6 +95,24 @@ function addNumbers(e) {
     return addNumber += e;
 }
 
+function reset() {
+  addNumber = null;
+  numberSelected.textContent = 0;
+
+  if (nextNumberSelected.textContent != "") {
+    nextNumberSelected.textContent = "";
+    box.removeChild(nextNumberSelected);    
+  }
+  if (operatorSelected.textContent != "") {
+    operatorSelected.textContent = "";
+    box.removeChild(operatorSelected);    
+  }
+  if (resultNumber.textContent != "") {
+    resultNumber.textContent = "";
+    boxResult.removeChild(resultNumber);     
+  }
+}
+
 numbers.forEach(number => {
     number.addEventListener("click", () => {
       if (operatorSelected.textContent === "") {
@@ -105,6 +124,32 @@ numbers.forEach(number => {
         box.appendChild(nextNumberSelected);
       }
     });    
+});
+
+let checkPoint = false;
+
+point.addEventListener("click", () => {
+  if (operatorSelected.textContent != "") 
+    checkPoint = false;
+
+  if (nextNumberSelected.textContent === "") {
+    if(checkPoint === false) {
+      numberSelected.textContent = addNumbers(point.id);
+      checkPoint = true;
+    }
+  }
+  else {
+    if (checkPoint === false) {
+      nextNumberSelected.textContent = addNumbers(point.id);
+    }
+  }
+
+  if(resultNumber.textContent != "") {
+    reset();
+    addNumber = 0;
+    numberSelected.textContent = addNumbers(point.id);
+    checkPoint = true;
+  }
 });
 
 negative.addEventListener("click", () => {
@@ -141,19 +186,5 @@ result.addEventListener("click", () => {
 });
 
 clear.addEventListener("click", () => {
-  addNumber = null;
-  numberSelected.textContent = 0;
-
-  if (nextNumberSelected.textContent != "") {
-    nextNumberSelected.textContent = "";
-    box.removeChild(nextNumberSelected);    
-  }
-  if (operatorSelected.textContent != "") {
-    operatorSelected.textContent = "";
-    box.removeChild(operatorSelected);    
-  }
-  if (resultNumber.textContent != "") {
-    resultNumber.textContent = "";
-    boxResult.removeChild(resultNumber);     
-  }
+  reset()
 });
