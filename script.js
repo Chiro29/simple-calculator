@@ -80,10 +80,17 @@ function round(e) {
 }
 
 function equals() {
-  const notRound = operate(numberSelected.textContent, nextNumberSelected.textContent, operatorSelected.textContent);
-  resultNumber.textContent = round(notRound);
-  boxResult.appendChild(resultNumber);
-  addNumber = null;
+  if (operatorSelected.textContent === "") {
+    resultNumber.textContent = numberSelected.textContent;
+    boxResult.appendChild(resultNumber);
+    addNumber = null;    
+  }
+  else {
+    const notRound = operate(numberSelected.textContent, nextNumberSelected.textContent, operatorSelected.textContent);
+    resultNumber.textContent = round(notRound);
+    boxResult.appendChild(resultNumber);
+    addNumber = null;
+  }
 }
 
 let addNumber = null;
@@ -95,8 +102,25 @@ function addNumbers(e) {
     return addNumber += e;
 }
 
+function numberSelection(n) {
+  if (operatorSelected.textContent === "") {
+    const checkNumber = addNumbers(n);
+    if (checkNumber == 0) {
+      numberSelected.textContent = checkNumber;
+      addNumber = null;
+    }
+    else 
+      numberSelected.textContent = checkNumber;
+  }
+  else {
+    nextNumberSelected.textContent = addNumbers(n);
+    box.appendChild(nextNumberSelected);
+  }
+} 
+
 function reset() {
   addNumber = null;
+  checkPoint = false;
   numberSelected.textContent = 0;
 
   if (nextNumberSelected.textContent != "") {
@@ -114,16 +138,14 @@ function reset() {
 }
 
 numbers.forEach(number => {
-    number.addEventListener("click", () => {
-      if (operatorSelected.textContent === "") {
-        numberSelected.textContent = addNumbers(number.id);
-        box.appendChild(numberSelected);
-      }
-      else {
-        nextNumberSelected.textContent = addNumbers(number.id);
-        box.appendChild(nextNumberSelected);
-      }
-    });    
+  number.addEventListener("click", () => {
+    if (resultNumber.textContent != "") {
+      reset();
+      numberSelection(number.id);
+    }
+    else
+      numberSelection(number.id);
+  });    
 });
 
 let checkPoint = false;
@@ -134,8 +156,15 @@ point.addEventListener("click", () => {
 
   if (nextNumberSelected.textContent === "") {
     if(checkPoint === false) {
-      numberSelected.textContent = addNumbers(point.id);
-      checkPoint = true;
+      if (numberSelected.textContent == 0) {
+        addNumber = 0;
+        numberSelected.textContent = addNumbers(point.id);
+        checkPoint = true;
+      }
+      else {
+        numberSelected.textContent = addNumbers(point.id);
+        checkPoint = true;
+      }
     }
   }
   else {
@@ -182,7 +211,7 @@ operators.forEach(operator => {
 });
 
 result.addEventListener("click", () => {
-  equals();
+    equals();
 });
 
 clear.addEventListener("click", () => {
