@@ -4,6 +4,7 @@ const operators = document.querySelectorAll(".operations");
 const result = document.querySelector(".result");
 const point = document.querySelector(".point");
 const negative = document.querySelector(".negative");
+const backspace = document.querySelector(".backspace");
 const clear = document.querySelector(".clear");
 
 const box = document.createElement("div");
@@ -95,26 +96,47 @@ function equals() {
 
 let addNumber = null;
 
-function addNumbers(e) {
+function addNumbers(n) {
   if (addNumber === null)
-    return addNumber = e;
+    return addNumber = n;
   else 
-    return addNumber += e;
+    return addNumber += n;
+}
+
+function removeNumbers() {
+  let array = String(addNumber).split("");
+  array.pop();
+  const string = array.join("");
+
+  if (string === "")
+    return addNumber = null;
+  else {
+    const checkN = Number(string);
+    const checkP = String(checkN).includes(".");
+    
+    if (checkP === false)
+      checkPoint = false;
+
+    return addNumber = Number(checkN);
+  }
 }
 
 function numberSelection(n) {
+  const checkNumber = addNumbers(n);
   if (operatorSelected.textContent === "") {
-    const checkNumber = addNumbers(n);
     if (checkNumber == 0) {
       numberSelected.textContent = checkNumber;
       addNumber = null;
     }
-    else 
+    else  
       numberSelected.textContent = checkNumber;
   }
   else {
-    nextNumberSelected.textContent = addNumbers(n);
+    nextNumberSelected.textContent = checkNumber;
     box.appendChild(nextNumberSelected);
+
+    if (checkNumber == 0) 
+      addNumber = null;
   }
 } 
 
@@ -169,7 +191,15 @@ point.addEventListener("click", () => {
   }
   else {
     if (checkPoint === false) {
-      nextNumberSelected.textContent = addNumbers(point.id);
+      if (nextNumberSelected.textContent == 0) {
+        addNumber = 0;
+        nextNumberSelected.textContent = addNumbers(point.id);
+        checkPoint = true;
+      }
+      else {
+        nextNumberSelected.textContent = addNumbers(point.id);
+        checkPoint = true;
+      }
     }
   }
 
@@ -212,6 +242,17 @@ operators.forEach(operator => {
 
 result.addEventListener("click", () => {
     equals();
+});
+
+backspace.addEventListener("click", () => {
+  if (operatorSelected.textContent === "") {
+    if(numberSelected.textContent != 0) 
+      numberSelected.textContent = removeNumbers();
+  } 
+  else {
+    if (nextNumberSelected.textContent != 0) 
+      nextNumberSelected.textContent = removeNumbers();
+  }
 });
 
 clear.addEventListener("click", () => {
