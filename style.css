@@ -41,10 +41,16 @@ button, p {
   margin: 5px;
   margin-bottom: 10px;
   height: 100px;
+  max-width: 388px;
 }
 
 .container-keys {
   display: flex;
+}
+
+.key {
+  opacity: 0;
+  position: absolute;
 }
 
 .container-number {
@@ -97,4 +103,5 @@ button, p {
   gap: 10px;
   font-size: 46px;
   font-weight: 900;
+  max-width: 388px;
 }

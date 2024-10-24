@@ -1,3 +1,4 @@
+const body = document.querySelector("body");
 const container = document.querySelector(".container");
 const numbers = document.querySelectorAll(".numbers");
 const operators = document.querySelectorAll(".operations");
@@ -6,6 +7,7 @@ const point = document.querySelector(".point");
 const negative = document.querySelector(".negative");
 const backspace = document.querySelector(".backspace");
 const clear = document.querySelector(".clear");
+const keysNumber = document.querySelector(".key");
 
 const box = document.createElement("div");
 const boxResult = document.createElement("div");
@@ -13,6 +15,12 @@ const numberSelected = document.createElement("p");
 const nextNumberSelected = document.createElement("p");
 const operatorSelected = document.createElement("p");
 const resultNumber = document.createElement("p");
+
+keysNumber.focus();
+
+body.addEventListener("click", () => {
+  keysNumber.focus();
+});
 
 numberSelected.textContent = 0;
 box.appendChild(numberSelected);
@@ -23,6 +31,7 @@ boxResult.classList.add("box-flex");
 container.appendChild(box);
 container.appendChild(boxResult);
 
+// Functions
 function operate(n, nx, o) {
   n = Number(n);
   nx = Number(nx);
@@ -55,45 +64,6 @@ function divide(n, nx) {
   return n / nx;
 }
 
-function sign(o) {
-  if (resultNumber.textContent != "") {
-    numberSelected.textContent = resultNumber.textContent;
-    resultNumber.textContent = "";
-    
-    if (nextNumberSelected.textContent != "") {
-      nextNumberSelected.textContent = "";
-      box.removeChild(nextNumberSelected);
-    }
-    
-    boxResult.removeChild(resultNumber); 
-  }
-
-  operatorSelected.textContent = o.id;
-  
-  if(operatorSelected.textContent === "%")
-    equals();
-
-  box.appendChild(operatorSelected);
-}
-
-function round(e) {
-  return Math.round(e * 100) / 100;
-}
-
-function equals() {
-  if (operatorSelected.textContent === "") {
-    resultNumber.textContent = numberSelected.textContent;
-    boxResult.appendChild(resultNumber);
-    addNumber = null;    
-  }
-  else {
-    const notRound = operate(numberSelected.textContent, nextNumberSelected.textContent, operatorSelected.textContent);
-    resultNumber.textContent = round(notRound);
-    boxResult.appendChild(resultNumber);
-    addNumber = null;
-  }
-}
-
 let addNumber = null;
 
 function addNumbers(n) {
@@ -103,47 +73,146 @@ function addNumbers(n) {
     return addNumber += n;
 }
 
-function removeNumbers() {
-  let array = String(addNumber).split("");
-  array.pop();
-  const string = array.join("");
-
-  if (string === "")
-    return addNumber = null;
-  else {
-    const checkN = Number(string);
-    const checkP = String(checkN).includes(".");
-    
-    if (checkP === false)
-      checkPoint = false;
-
-    return addNumber = Number(checkN);
-  }
-}
-
 function numberSelection(n) {
+  if (resultNumber.textContent != "")
+    reset();
+
   const checkNumber = addNumbers(n);
-  if (operatorSelected.textContent === "") {
-    if (checkNumber == 0) {
-      numberSelected.textContent = checkNumber;
-      addNumber = null;
-    }
-    else  
-      numberSelected.textContent = checkNumber;
-  }
+  if (operatorSelected.textContent === "") 
+    numberSelected.textContent = checkNumber;
   else {
     nextNumberSelected.textContent = checkNumber;
     box.appendChild(nextNumberSelected);
-
-    if (checkNumber == 0) 
-      addNumber = null;
   }
+
+  if (checkNumber == 0) 
+    addNumber = null; 
 } 
 
-function reset() {
+function points(p) {
+  let checkPoint = "";
+
+  function checkPoints(n) {
+    const string = String(n);
+  
+    if (string.includes("."))
+      return true;
+    else
+      return false;
+  }
+
+  if (operatorSelected.textContent === "") {
+    checkPoint = checkPoints(numberSelected.textContent);
+
+    if (checkPoint === false) {
+      if (numberSelected.textContent == 0) 
+        addNumber = 0;
+
+      numberSelected.textContent = addNumbers(p);
+    }
+  }
+  else {
+    checkPoint = checkPoints(nextNumberSelected.textContent);
+
+    if (checkPoint === false) {
+      if (nextNumberSelected.textContent === "" || nextNumberSelected.textContent == 0) 
+        addNumber = 0;
+
+      nextNumberSelected.textContent = addNumbers(p);
+      box.appendChild(nextNumberSelected);
+    }
+  }
+
+  if(resultNumber.textContent !== "") {
+    reset();
+    addNumber = 0;
+    numberSelected.textContent = addNumbers(p);
+  }
+}
+
+function negate() {
+  if(operatorSelected.textContent === "" && resultNumber.textContent === "") 
+    numberSelected.textContent = -numberSelected.textContent;
+  else if(resultNumber.textContent != "") {
+    reset(-resultNumber.textContent);
+  }
+  else
+    nextNumberSelected.textContent = -nextNumberSelected.textContent;
+}
+
+function selectOperations(o) {
+  function sign() {
+    if (resultNumber.textContent !== "")
+      reset(resultNumber.textContent);
+    
+    if (o === "*")
+      operatorSelected.textContent = "×";
+    else if (o === "/")
+      operatorSelected.textContent = "÷";
+    else
+      operatorSelected.textContent = o;
+    
+    if(operatorSelected.textContent === "%")
+      equals();
+  
+    box.appendChild(operatorSelected);
+  }
+
+  if ((resultNumber.textContent === "" && nextNumberSelected.textContent === "") || (resultNumber.textContent != "" && nextNumberSelected.textContent != "")) {
+    operatorSelected.textContent = "";
+    sign();
+    addNumber = null;
+  }
+  else {
+    equals();
+    sign();
+  }
+}
+
+function equals() {
+  function round(e) {
+    return Math.round(e * 100) / 100;
+  }
+
+  if (operatorSelected.textContent === "" || (operatorSelected.textContent !== "" && operatorSelected.textContent !== "%" && nextNumberSelected.textContent === "")) {
+    resultNumber.textContent = Number(numberSelected.textContent);
+    boxResult.appendChild(resultNumber);   
+  }
+  else {
+    const notRound = operate(numberSelected.textContent, nextNumberSelected.textContent, operatorSelected.textContent);
+    resultNumber.textContent = Number(round(notRound));
+    boxResult.appendChild(resultNumber);
+  }
   addNumber = null;
-  checkPoint = false;
-  numberSelected.textContent = 0;
+}
+
+function back() {
+  function removeNumbers() {
+    let array = String(addNumber).split("");
+    array.pop();
+    const string = array.join("");
+  
+    if (string === "") {
+      addNumber = null;
+      return 0;
+    }
+    else 
+      return addNumber = string;
+  }
+
+  if (operatorSelected.textContent === "") {
+    if(numberSelected.textContent != 0) 
+      numberSelected.textContent = removeNumbers();
+  } 
+  else {
+    if (nextNumberSelected.textContent != 0) 
+      nextNumberSelected.textContent = removeNumbers();
+  }
+}
+
+function reset(n) {
+  addNumber = null;
+  numberSelected.textContent = n;
 
   if (nextNumberSelected.textContent != "") {
     nextNumberSelected.textContent = "";
@@ -159,102 +228,65 @@ function reset() {
   }
 }
 
+// Mouse events
 numbers.forEach(number => {
   number.addEventListener("click", () => {
-    if (resultNumber.textContent != "") {
-      reset();
-      numberSelection(number.id);
-    }
-    else
-      numberSelection(number.id);
-  });    
+    numberSelection(number.id);
+    keysNumber.focus(); 
+  });  
 });
 
-let checkPoint = false;
-
 point.addEventListener("click", () => {
-  if (operatorSelected.textContent != "") 
-    checkPoint = false;
-
-  if (nextNumberSelected.textContent === "") {
-    if(checkPoint === false) {
-      if (numberSelected.textContent == 0) {
-        addNumber = 0;
-        numberSelected.textContent = addNumbers(point.id);
-        checkPoint = true;
-      }
-      else {
-        numberSelected.textContent = addNumbers(point.id);
-        checkPoint = true;
-      }
-    }
-  }
-  else {
-    if (checkPoint === false) {
-      if (nextNumberSelected.textContent == 0) {
-        addNumber = 0;
-        nextNumberSelected.textContent = addNumbers(point.id);
-        checkPoint = true;
-      }
-      else {
-        nextNumberSelected.textContent = addNumbers(point.id);
-        checkPoint = true;
-      }
-    }
-  }
-
-  if(resultNumber.textContent != "") {
-    reset();
-    addNumber = 0;
-    numberSelected.textContent = addNumbers(point.id);
-    checkPoint = true;
-  }
+  points(point.id);
+  keysNumber.focus();
 });
 
 negative.addEventListener("click", () => {
-  if(nextNumberSelected.textContent === "") 
-    numberSelected.textContent = -numberSelected.textContent;
-  else if(resultNumber.textContent != "") {
-    numberSelected.textContent = -resultNumber.textContent;
-    resultNumber.textContent = "";
-    nextNumberSelected.textContent = "";
-
-    boxResult.removeChild(resultNumber);
-    box.removeChild(nextNumberSelected);
-  }
-  else
-    nextNumberSelected.textContent = -nextNumberSelected.textContent;
-});
+  negate();
+  keysNumber.focus();
+ });
 
 operators.forEach(operator => {
   operator.addEventListener("click", () => {
-    if ((resultNumber.textContent === "" && nextNumberSelected.textContent === "") || (resultNumber.textContent != "" && nextNumberSelected.textContent != "")) {
-      operatorSelected.textContent = "";
-      sign(operator);
-      addNumber = null;
-    }
-    else {
-      equals();
-      sign(operator);
-    }
+  selectOperations(operator.id);
+
+  keysNumber.focus();
   });
 });
 
 result.addEventListener("click", () => {
-    equals();
+  equals();
+  
+  keysNumber.focus();
 });
 
 backspace.addEventListener("click", () => {
-  if (operatorSelected.textContent === "") {
-    if(numberSelected.textContent != 0) 
-      numberSelected.textContent = removeNumbers();
-  } 
-  else {
-    if (nextNumberSelected.textContent != 0) 
-      nextNumberSelected.textContent = removeNumbers();
-  }
+  back();
+
+  keysNumber.focus();
 });
 
 clear.addEventListener("click", () => {
-  reset()
+  reset(0);
+
+  keysNumber.focus();
+});
+
+// Keys events
+keysNumber.addEventListener("keydown", (event) => { 
+  const num = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]; 
+  const signs = ["%", "+", "-", "*", "/"]; 
+
+  if (num.includes(event.key)) 
+    numberSelection(event.key);
+  if (event.key === ".")
+    points(event.key);
+  if (signs.includes(event.key))
+    selectOperations(event.key);
+  if (event.key === "=" || event.key === "Enter")
+    equals();
+  if (event.key === "Backspace")
+    back();
+  if (event.key === "Delete")
+    reset(0);
 });
