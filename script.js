@@ -1,5 +1,6 @@
 const body = document.querySelector("body");
 const container = document.querySelector(".container");
+const content = document.querySelector(".content");
 const numbers = document.querySelectorAll(".numbers");
 const operators = document.querySelectorAll(".operations");
 const result = document.querySelector(".result");
@@ -15,21 +16,17 @@ const numberSelected = document.createElement("p");
 const nextNumberSelected = document.createElement("p");
 const operatorSelected = document.createElement("p");
 const resultNumber = document.createElement("p");
-
-keysNumber.focus();
-
-body.addEventListener("click", () => {
-  keysNumber.focus();
-});
-
-numberSelected.textContent = 0;
-box.appendChild(numberSelected);
+const scrollBar = document.createElement("div");
 
 box.classList.add("box-flex");
 boxResult.classList.add("box-flex");
+scrollBar.classList.add("scrollbar");
 
-container.appendChild(box);
-container.appendChild(boxResult);
+numberSelected.textContent = 0;
+box.appendChild(numberSelected);
+container.appendChild(scrollBar);
+content.appendChild(box);
+content.appendChild(boxResult);
 
 // Functions
 function operate(n, nx, o) {
@@ -78,11 +75,14 @@ function numberSelection(n) {
     reset();
 
   const checkNumber = addNumbers(n);
-  if (operatorSelected.textContent === "") 
-    numberSelected.textContent = checkNumber;
-  else {
-    nextNumberSelected.textContent = checkNumber;
-    box.appendChild(nextNumberSelected);
+  
+  if (String(checkNumber).length < 22) {
+    if (operatorSelected.textContent === "") 
+      numberSelected.textContent = checkNumber;
+    else {
+      nextNumberSelected.textContent = checkNumber;
+      box.appendChild(nextNumberSelected);
+    }
   }
 
   if (checkNumber == 0) 
@@ -169,20 +169,21 @@ function selectOperations(o) {
   }
 }
 
-function equals() {
+function equals() {  
   function round(e) {
     return Math.round(e * 100) / 100;
   }
 
   if (operatorSelected.textContent === "" || (operatorSelected.textContent !== "" && operatorSelected.textContent !== "%" && nextNumberSelected.textContent === "")) {
-    resultNumber.textContent = Number(numberSelected.textContent);
-    boxResult.appendChild(resultNumber);   
+    resultNumber.textContent = Number(numberSelected.textContent);   
   }
   else {
     const notRound = operate(numberSelected.textContent, nextNumberSelected.textContent, operatorSelected.textContent);
     resultNumber.textContent = Number(round(notRound));
-    boxResult.appendChild(resultNumber);
   }
+
+  boxResult.appendChild(resultNumber);
+
   addNumber = null;
 }
 
@@ -200,13 +201,15 @@ function back() {
       return addNumber = string;
   }
 
-  if (operatorSelected.textContent === "") {
-    if(numberSelected.textContent != 0) 
-      numberSelected.textContent = removeNumbers();
-  } 
-  else {
-    if (nextNumberSelected.textContent != 0) 
-      nextNumberSelected.textContent = removeNumbers();
+  if (resultNumber.textContent === "") {
+    if (operatorSelected.textContent === "") {
+      if(numberSelected.textContent != 0) 
+        numberSelected.textContent = removeNumbers();
+    } 
+    else {
+      if (nextNumberSelected.textContent != 0) 
+        nextNumberSelected.textContent = removeNumbers();
+    }
   }
 }
 
@@ -229,6 +232,10 @@ function reset(n) {
 }
 
 // Mouse events
+body.addEventListener("click", () => {
+  keysNumber.focus();
+});
+
 numbers.forEach(number => {
   number.addEventListener("click", () => {
     numberSelection(number.id);
@@ -273,6 +280,8 @@ clear.addEventListener("click", () => {
 });
 
 // Keys events
+keysNumber.focus();
+
 keysNumber.addEventListener("keydown", (event) => { 
   const num = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]; 
   const signs = ["%", "+", "-", "*", "/"]; 
