@@ -113,7 +113,7 @@ button {
 /* Media query for mobile devices */
 @media (max-width: 768px) {
   .key {
-    display: hidden;
+    display: none;
   }
 }
 
