@@ -109,3 +109,11 @@ button {
   font-size: 24px;
   font-weight: 900;
 }
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .key {
+    display: hidden;
+  }
+}
+
